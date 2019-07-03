@@ -175,11 +175,15 @@ func unmarshalNode(data *Node, model reflect.Value, included *map[string]*Node) 
 		}
 
 		if annotation == annotationPrimary {
-			if data.ID == "" {
-				continue
+			// Check the JSON API Type
+			if data.Type == "" {
+				er = fmt.Errorf(
+					"the \"type\" field is missing in the resource object, it is required and should be %#v",
+					args[1],
+				)
+				break
 			}
 
-			// Check the JSON API Type
 			if data.Type != args[1] {
 				er = fmt.Errorf(
 					"Trying to Unmarshal an object of type %#v, but %#v does not match",
@@ -187,6 +191,10 @@ func unmarshalNode(data *Node, model reflect.Value, included *map[string]*Node) 
 					args[1],
 				)
 				break
+			}
+
+			if data.ID == "" {
+				continue
 			}
 
 			// ID will have to be transmitted as astring per the JSON API spec

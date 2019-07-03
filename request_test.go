@@ -72,13 +72,13 @@ func TestUnmarshalToStructWithPointerAttr(t *testing.T) {
 
 func TestUnmarshalPayload_ptrsAllNil(t *testing.T) {
 	out := new(WithPointer)
-	if err := UnmarshalPayload(
-		strings.NewReader(`{"data": {}}`), out); err != nil {
-		t.Fatalf("Error unmarshalling to Foo")
+	expectedErrorMessage := "the \"type\" field is missing in the resource object, it is required and should be \"with-pointers\""
+	err := UnmarshalPayload(strings.NewReader(`{"data": {}}`), out);
+	if err == nil {
+		t.Fatalf("No error unmarshalling data without type to Foo")
 	}
-
-	if out.ID != nil {
-		t.Fatalf("Error unmarshalling; expected ID ptr to be nil")
+	if err.Error() != expectedErrorMessage {
+		t.Fatalf("Unexpected error message: %s", err.Error())
 	}
 }
 
